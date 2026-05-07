@@ -1,0 +1,12 @@
+{
+    "name": "pulumi-basic-app",
+    "main": "index.ts",
+    "devDependencies": {
+        "@types/node": "^18",
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@pulumi/pulumi": "^3.236.0",
+        "@pulumi/pulumiservice": "^0.39.0"
+    }
+}
