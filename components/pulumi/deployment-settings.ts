@@ -63,19 +63,25 @@ export class PulumiDeploymentSettings extends pulumi.ComponentResource {
                     organization: pulumi.getOrganization(),
                     project: pulumi.getProject(),
                     stack: pulumi.getStack(),
-                    github: {
-                        repository: `${repoInfos.username}/${repoInfos.repoName}`,
-                        /**
-                         * On merge, deploy changes to the stack
-                         */
+                    vcs: {
+                        provider: "github",
                         deployCommits: true,
-                        previewPullRequests: false,
-                        /**
-                         * Make this stack a review stack template only.
-                         * No resources are going to be deployed in this stack.
-                         */
-                        pullRequestTemplate: false,
+                        previewPullRequests: true,
+                        repository: `${repoInfos.username}/${repoInfos.repoName}`,
                     },
+                    // github: {
+                    //     repository: `${repoInfos.username}/${repoInfos.repoName}`,
+                    //     /**
+                    //      * On merge, deploy changes to the stack
+                    //      */
+                    //     deployCommits: true,
+                    //     previewPullRequests: false,
+                    //     /**
+                    //      * Make this stack a review stack template only.
+                    //      * No resources are going to be deployed in this stack.
+                    //      */
+                    //     pullRequestTemplate: false,
+                    // },
                     sourceContext: {
                         git: {
                             branch: "main"
@@ -87,54 +93,54 @@ export class PulumiDeploymentSettings extends pulumi.ComponentResource {
                     operationContext: operationContext,
                 }, { parent: this, deleteBeforeReplace: true });
 
-                // Let's create a Pulumi DeploymentSchedule for drift detection
-                this.driftSchedule = new pulumiservice.DriftSchedule(`${args.prefixName}-drift-detection`, {
-                    organization: pulumi.getOrganization(),
-                    project: pulumi.getProject(),
-                    stack: pulumi.getStack(),
-                    autoRemediate: false,              // only warn about drift, do not remediate.
-                    scheduleCron: "*/5 * * * *",
-                    //               | | | | |
-                    //               | | | | |         // see https://man7.org/linux/man-pages/man5/crontab.5.html
-                    //               | | | | \-------- day of week
-                    //               | | | \---------- month
-                    //               | | \------------ day of the month
-                    //               | \-------------- hour
-                    //               \---------------- minutes
-                }, { dependsOn: [this.deploymentSettings], parent: this.deploymentSettings, deleteBeforeReplace: true });
+                // // Let's create a Pulumi DeploymentSchedule for drift detection
+                // this.driftSchedule = new pulumiservice.DriftSchedule(`${args.prefixName}-drift-detection`, {
+                //     organization: pulumi.getOrganization(),
+                //     project: pulumi.getProject(),
+                //     stack: pulumi.getStack(),
+                //     autoRemediate: false,              // only warn about drift, do not remediate.
+                //     scheduleCron: "*/5 * * * *",
+                //     //               | | | | |
+                //     //               | | | | |         // see https://man7.org/linux/man-pages/man5/crontab.5.html
+                //     //               | | | | \-------- day of week
+                //     //               | | | \---------- month
+                //     //               | | \------------ day of the month
+                //     //               | \-------------- hour
+                //     //               \---------------- minutes
+                // }, { dependsOn: [this.deploymentSettings], parent: this.deploymentSettings, deleteBeforeReplace: true });
 
-                /**
-                 * Create an empty stack for the purpose of review stacks
-                 */
-                this.reviewStack = new pulumiservice.Stack(`${args.prefixName}-review-stack`, {
-                    organizationName: pulumi.getOrganization(),
-                    projectName: pulumi.getProject(),
-                    stackName: "review-stack",
-                });
+                // /**
+                //  * Create an empty stack for the purpose of review stacks
+                //  */
+                // this.reviewStack = new pulumiservice.Stack(`${args.prefixName}-review-stack`, {
+                //     organizationName: pulumi.getOrganization(),
+                //     projectName: pulumi.getProject(),
+                //     stackName: "review-stack",
+                // });
 
-                /**
-                 * Set the DeploymentSettings for the `review-stack` template
-                 */
-                this.reviewStackSettings = new pulumiservice.DeploymentSettings(`${args.prefixName}-review-stack-deployment-settings`, {
-                    organization: pulumi.getOrganization(),
-                    project: pulumi.getProject(),
-                    stack: this.reviewStack.stackName,
-                    github: {
-                        repository: `${repoInfos.username}/${repoInfos.repoName}`,
-                        deployCommits: false,
-                        previewPullRequests: false,
-                        pullRequestTemplate: true,
-                    },
-                    sourceContext: {
-                        git: {
-                            branch: "main"
-                        }
-                    },
-                    cacheOptions: {
-                        enable: true,
-                    },
-                    operationContext: operationContext,
-                }, { parent: this.reviewStack, deleteBeforeReplace: true });
+                // /**
+                //  * Set the DeploymentSettings for the `review-stack` template
+                //  */
+                // this.reviewStackSettings = new pulumiservice.DeploymentSettings(`${args.prefixName}-review-stack-deployment-settings`, {
+                //     organization: pulumi.getOrganization(),
+                //     project: pulumi.getProject(),
+                //     stack: this.reviewStack.stackName,
+                //     github: {
+                //         repository: `${repoInfos.username}/${repoInfos.repoName}`,
+                //         deployCommits: false,
+                //         previewPullRequests: false,
+                //         pullRequestTemplate: true,
+                //     },
+                //     sourceContext: {
+                //         git: {
+                //             branch: "main"
+                //         }
+                //     },
+                //     cacheOptions: {
+                //         enable: true,
+                //     },
+                //     operationContext: operationContext,
+                // }, { parent: this.reviewStack, deleteBeforeReplace: true });
 
             }
         }
