@@ -93,21 +93,21 @@ export class PulumiDeploymentSettings extends pulumi.ComponentResource {
                     operationContext: operationContext,
                 }, { parent: this, deleteBeforeReplace: true });
 
-                // // Let's create a Pulumi DeploymentSchedule for drift detection
-                // this.driftSchedule = new pulumiservice.DriftSchedule(`${args.prefixName}-drift-detection`, {
-                //     organization: pulumi.getOrganization(),
-                //     project: pulumi.getProject(),
-                //     stack: pulumi.getStack(),
-                //     autoRemediate: false,              // only warn about drift, do not remediate.
-                //     scheduleCron: "*/5 * * * *",
-                //     //               | | | | |
-                //     //               | | | | |         // see https://man7.org/linux/man-pages/man5/crontab.5.html
-                //     //               | | | | \-------- day of week
-                //     //               | | | \---------- month
-                //     //               | | \------------ day of the month
-                //     //               | \-------------- hour
-                //     //               \---------------- minutes
-                // }, { dependsOn: [this.deploymentSettings], parent: this.deploymentSettings, deleteBeforeReplace: true });
+                // Let's create a Pulumi DeploymentSchedule for drift detection
+                this.driftSchedule = new pulumiservice.DriftSchedule(`${args.prefixName}-drift-detection`, {
+                    organization: pulumi.getOrganization(),
+                    project: pulumi.getProject(),
+                    stack: pulumi.getStack(),
+                    autoRemediate: false,              // only warn about drift, do not remediate.
+                    scheduleCron: "*/5 * * * *",
+                    //               | | | | |
+                    //               | | | | |         // see https://man7.org/linux/man-pages/man5/crontab.5.html
+                    //               | | | | \-------- day of week
+                    //               | | | \---------- month
+                    //               | | \------------ day of the month
+                    //               | \-------------- hour
+                    //               \---------------- minutes
+                }, { dependsOn: [this.deploymentSettings], parent: this.deploymentSettings, deleteBeforeReplace: true });
 
                 // /**
                 //  * Create an empty stack for the purpose of review stacks
