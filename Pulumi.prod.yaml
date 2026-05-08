@@ -1,0 +1,3 @@
+config:
+  pulumi-basic-app:orgAccessToken:
+    secure: AAABAObsvXWgnS0UtI7xI0tmTXwD9UWbHpLD5gtLSEwv9tPtuYHLa7JKm3wCv9YI/IJgW1EqvLV63EPHsajJ+wR3z6nyx9Y5Mwjy5g==
